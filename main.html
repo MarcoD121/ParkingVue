@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script> -->
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Parking</title>
+    
+</head>
+
+<body>
+    <h1>Parking</h1>
+
+    <div id="app">
+        <input v-model="LicensePlate" placeholder="License Plate" type="text" >
+        <button class="btn btn-primary" v-on:click="getCarByLicensePlate(LicensePlate)">Søg</button>
+        <ul v-if="parkingslist.length > 0">
+            <li>Der er {{20-parkingslist.length}}/20 ledige pladser tilbage</li>
+            <li v-for="car in parkingslist" v-bind:key="car.id">
+                License Plate {{car.licensePlate}}: Make {{car.make}}: Model {{car.model}}: Color {{car.color}}: Parking starttime {{car.dateTime}}
+            </li>
+            <li>{{car}}</li>
+        </ul>  
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
