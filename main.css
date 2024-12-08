@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  .view-parking-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer
+  }
+  
+  .login-logout-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .parkings {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+  
+.parkings thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
+
+.parkings th,
+.parkings td {
+    padding: 12px 15px;
+}
+.parkings tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.parkings tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.parkings tbody tr.parkings-row {
+  font-weight: bold;
+  color: #009879;
+}
+
+h2 {
+  color: #333;
+}
+  
+  

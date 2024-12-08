@@ -14,21 +14,58 @@
 </head>
 
 <body>
-    <h1>Parking</h1>
-
     <div id="app">
-        <input v-model="LicensePlate" placeholder="License Plate" type="text" >
-        <button class="btn btn-primary" v-on:click="getCarByLicensePlate(LicensePlate)">Søg</button>
-        <ul v-if="parkingslist.length > 0">
-            <li>Der er {{20-parkingslist.length}}/20 ledige pladser tilbage</li>
-            <li v-for="car in parkingslist" v-bind:key="car.id">
-                License Plate {{car.licensePlate}}: Make {{car.make}}: Model {{car.model}}: Color {{car.color}}: Parking starttime {{car.dateTime}}
-            </li>
-            <li>{{car}}</li>
-        </ul>  
+        <button class="login-logout-button">
+            Log ind
+        </button>
+
+        <button class="view-parking-button" @click="toggleView">
+            {{ isCurrentView ? "Se tidligere parkeringer" : "Se aktuelle parkeringer" }}
+        </button>
+
+        <!-- Kode til aktuelle parkinger -->  
+        <div v-if="isCurrentView">
+            <h2>Nuværende parkeret biler</h2>
+            <input v-model="LicensePlate" placeholder="License Plate" type="text" >
+            <button class="btn btn-primary" v-on:click="getCarByLicensePlate(LicensePlate)">Søg</button>
+            
+            <div>Der er {{20-currentParkings.length}}/20 ledige pladser tilbage</div>
+
+            <table class="parkings">
+                <thead>
+                    <tr>
+                        <th>Nummerplade</th>
+                        <th>Mærke</th>
+                        <th>Model</th>
+                        <th>Farve</th>
+                        <th>Tid</th>
+                    </tr>
+                </thead>
+                <tbody v-for="parking in showParkings" :key="parking.id" class="parkings-row">
+                    <tr>
+                        <td>{{ parking.licensePlate }}</td>
+                        <td>{{ parking.make }}</td>
+                        <td>{{ parking.model }}</td>
+                        <td>{{ parking.color }}</td>
+                        <td>{{ parking.dateTime}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Kode til tidligere parkinger -->
+        <div v-else>
+            <h2>Afsluttede parkeringer</h2>
+            <input v-model="LicensePlate" placeholder="License Plate" type="text" >
+            <button class="btn btn-primary" v-on:click="getCarByLicensePlate()">Søg</button>
+            <ul>
+                <li v-for="parking in showParkings" :key="parking.id">
+                    Make - {{ parking.make }}
+                </li>
+            </ul>
+        </div> 
     </div>
 
     <script src="main.js"></script>
 </body>
-
 </html>

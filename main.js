@@ -3,8 +3,10 @@ const baseUrl = "http://localhost:5270/api/Parkings"
 Vue.createApp({
     data() {
         return {
-            nyliste:[],
-            parkingslist: [],
+            currentParkings:[],
+            previousParkings: [],
+            showParkings: [],
+            isCurrentView: true,
             error: null,
             statuscode:null,
             getCarId: "",
@@ -12,7 +14,6 @@ Vue.createApp({
             carMake:"Ford",
             carModel:"Mustang",
             deletecarId:1,
-            car: null
         }
     },
      created() {
@@ -23,9 +24,13 @@ Vue.createApp({
     },
     methods: {
         cleanList() {
-            this.parkingslist = [];
+            this.currentParkings = [];
             this.error = null;
-            console.log("count cars : " + this.parkingslist.length);
+            console.log("count cars : " + this.currentParkings.length);
+        },
+        toggleView(){
+          this.isCurrentView = !this.isCurrentView;
+          this.showParkings = this.isCurrentView ? currentParkings : previousParkings
         },
         //Read this for an example: https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
          getAllParkings() {
@@ -34,52 +39,58 @@ Vue.createApp({
             axios.get(baseUrl)
             .then(response => {
 
-             console.log("in function getAllCars");
+             console.log("in function getAllParkings");
              console.log("status code: "+ response.status );
-
+             console.log("items ", response.data)
              //add the returning data from the webservice to the variable carlists
-             this.parkingslist = response.data;
-             this.status = response.status;
+            this.currentParkings = response.data;
+            this.showParkings = response.data
+            this.status = response.status;
               
-             console.log("length of the carlist array " + this.parkingslist.length)
+            console.log("length of the currentParkings array " + this.currentParkings.length)
 
 
             })
             .catch(error => {
               //resultElement.innerHTML = generateErrorHTMLOutput(error);
-              this.parkingslist = []
-                this.error = error.message
+              this.showParkings = []
+              this.error = error.message
               console.log("Error:" + this.error);
             })      
             
         },
-        getCarByLicensePlate(id){
+        getCarByLicensePlate(licensePlate){
+          if (licensePlate == ""){
+            this.getAllParkings()
+          }
+          else {
             this.error = null;
             //axios call that returns the items from a specified user 
-            url = baseUrl +"/"+id
+            url = baseUrl +"/"+licensePlate
             axios.get(url)
             .then(response => {
             
             console.log("Url: " + url)
 
-            console.log("in function getByUserId");
+            console.log("in function getCarByLicensePlate");
             console.log("status code: " + response.status );
             console.log("items ", response.data)
             //add the returning data from the webservice to the variable posts
             //  this.carslist = response.data;
-            //this.parkingslist = [];
-            //this.parkingslist.push(response.data);
-            this.car = response.data
+            this.showParkings = []
+            this.showParkings.push(response.data)
             this.status = response.status;
             
-            console.log("length of the parkingslists array " + this.parkingslist.length)
+            console.log("length of the currentParkings array " + this.currentParkings.length)
             
             })
             .catch(error => {
-              this.parkingslist = []
+              this.showParkings = []
               this.error = error.message
               console.log("Error:" + this.error);
-            })      
+            })  
+          }
+                
         },
         PostCar(){
             this.error = null;
