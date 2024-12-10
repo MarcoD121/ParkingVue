@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script> -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <title>Parking</title>
@@ -14,31 +15,44 @@
 </head>
 
 <body>
-    <div id="app">
-        <button class="login-logout-button">
-            Log ind
-        </button>
+    <div id="app" class="container my-4">
+        <div class="d-flex justify-content-end">
+            <button class="login-logout-button btn btn-outline-primary">Log ud</button>
+        </div>
 
-        <button class="view-parking-button" @click="toggleView">
-            {{ isCurrentView ? "Se tidligere parkeringer" : "Se aktuelle parkeringer" }}
-        </button>
+        <div>
+            <button class="view-parking-button btn btn-primary" @click="toggleView">
+                {{ isCurrentView ? "Se tidligere parkeringer" : "Se aktuelle parkeringer" }}
+            </button>
+        </div>
 
         <!-- Kode til aktuelle parkinger -->  
         <div v-if="isCurrentView">
-            <h2>Nuværende parkeret biler</h2>
-            <input v-model="LicensePlate" placeholder="License Plate" type="text" >
-            <button class="btn btn-primary" v-on:click="getCarByLicensePlate(LicensePlate)">Søg</button>
-            
-            <div>Der er {{20-currentParkings.length}}/20 ledige pladser tilbage</div>
-
-            <table class="parkings">
+            <h1 class="text-center">Ledige P-plader</h1>
+            <h1 class="text-center" style="margin-bottom: 75px;">{{20-currentParkings.length}}/20 </H1>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="border-bottom">Nuværende parkeret biler</h2>
+                        <div class="d-flex col-3">
+                            <input class="form-control me-2" v-model="LicensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCarByLicensePlate(LicensePlate)" >
+                    </div>
+                </div>
+            <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>Nummerplade</th>
-                        <th>Mærke</th>
+                        <th @click="sortByLicensePlate">
+                            Nummerplade
+                            <span v-if="sortDirections.licensePlate === 'asc'">⇑</span>
+                            <span v-if="sortDirections.licensePlate === 'desc'">⇓</span>
+                        </th>
+                        <th @click="sortByMake">
+                            Mærke
+                            <span v-if="sortDirections.make === 'asc'">⇑</span>
+                            <span v-if="sortDirections.make === 'desc'">⇓</span>
+                        </th>
                         <th>Model</th>
                         <th>Farve</th>
                         <th>Tid</th>
+                        <th>Totaltid</th>
                     </tr>
                 </thead>
                 <tbody v-for="parking in showParkings" :key="parking.id" class="parkings-row">
@@ -48,6 +62,7 @@
                         <td>{{ parking.model }}</td>
                         <td>{{ parking.color }}</td>
                         <td>{{ parking.dateTime}}</td>
+                        <td>{{parking.dateTime}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -56,6 +71,7 @@
         <!-- Kode til tidligere parkinger -->
         <div v-else>
             <h2>Afsluttede parkeringer</h2>
+            <button @click="getAllEndedParkings()" >Get Ended Cars</button>
             <input v-model="LicensePlate" placeholder="License Plate" type="text" >
             <button class="btn btn-primary" v-on:click="getCarByLicensePlate()">Søg</button>
             <ul>

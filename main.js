@@ -14,13 +14,19 @@ Vue.createApp({
             carMake:"Ford",
             carModel:"Mustang",
             deletecarId:1,
+            // sortDirection: "asc",
+            currentSortColumn: null,
+            sortDirections: {
+              licensePlate: "asc",
+              make: "asc",
+          },
         }
     },
      created() {
         // created() is a life cycle method, not an ordinary method
         // created() is called automatically when the page is loaded
         console.log("created method called")
-        this.getAllParkings()
+        this.getAllCurrentParkings()
     },
     methods: {
         cleanList() {
@@ -30,13 +36,13 @@ Vue.createApp({
         },
         toggleView(){
           this.isCurrentView = !this.isCurrentView;
-          this.showParkings = this.isCurrentView ? currentParkings : previousParkings
+          this.isCurrentView ? this.getAllCurrentParkings() : this.getAllEndedParkings()
         },
         //Read this for an example: https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
-         getAllParkings() {
+         getAllCurrentParkings() {
             this.error = null;
              //axios call that returns all the elements from the webservice
-            axios.get(baseUrl)
+            axios.get(baseUrl+"/ActiveParkings")
             .then(response => {
 
              console.log("in function getAllParkings");
@@ -59,9 +65,34 @@ Vue.createApp({
             })      
             
         },
+        getAllEndedParkings() {
+          this.error = null;
+           //axios call that returns all the elements from the webservice
+          axios.get(baseUrl+"/EndedParkings")
+          .then(response => {
+
+           console.log("in function getAllEndedParkings");
+           console.log("status code: "+ response.status );
+           console.log("items ", response.data)
+           //add the returning data from the webservice to the variable carlists
+          this.previousParkings = response.data;
+          this.showParkings = response.data
+          this.status = response.status;
+            
+          console.log("length of the currentParkings array " + this.currentParkings.length)
+
+
+          })
+          .catch(error => {
+            //resultElement.innerHTML = generateErrorHTMLOutput(error);
+            this.showParkings = []
+            this.error = error.message
+            console.log("Error:" + this.error);
+          })
+      },
         getCarByLicensePlate(licensePlate){
           if (licensePlate == ""){
-            this.getAllParkings()
+            this.getAllCurrentParkings()
           }
           else {
             this.error = null;
@@ -137,9 +168,23 @@ Vue.createApp({
               this.error = error.message
               console.log("Error:" + this.error);
             })      
-        }
-        
-       
-       
+        },
+        sortByLicensePlate() {
+          const direction = this.sortDirections.licensePlate;
+          this.showParkings.sort((a, b) => {
+              if (direction === "asc") return a.licensePlate.localeCompare(b.licensePlate);
+              else return b.licensePlate.localeCompare(a.licensePlate);
+          });
+          this.sortDirections.licensePlate = direction === "asc" ? "desc" : "asc";
+      },
+      sortByMake() {
+        const direction = this.sortDirections.make;
+        this.showParkings.sort((a, b) => {
+            if (direction === "asc") return a.make.localeCompare(b.make);
+            else return b.make.localeCompare(a.make);
+        });
+  
+        this.sortDirections.make = direction === "asc" ? "desc" : "asc";
+    },
     }
 }).mount("#app")

@@ -55,5 +55,11 @@ body {
 h2 {
   color: #333;
 }
+
+table th, .table td {
+  width: 16.66%;
+  vertical-align: middle;
+  cursor: pointer;
+}
   
   
