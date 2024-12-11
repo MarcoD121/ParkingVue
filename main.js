@@ -1,10 +1,10 @@
-const baseUrl = "http://localhost:5270/api/Parkings";
+const baseUrl = "https://testing-rest-fba3ftdtdwcqd0h5.northeurope-01.azurewebsites.net/api/Parkings";
 
 Vue.createApp({
     data() {
         return {
             currentParkings:[],
-            previousParkings: [],
+            endedParkings: [],
             showParkings: [],
             isCurrentView: true,
             error: null,
@@ -14,11 +14,18 @@ Vue.createApp({
             carMake:"Ford",
             carModel:"Mustang",
             deletecarId:1,
-            // sortDirection: "asc",
+            username: "",
+            password:"",
+            logout:true,
             currentSortColumn: null,
+            users: [
+              { username: "Admin", password: "123" },
+            ],
             sortDirections: {
               licensePlate: "asc",
               make: "asc",
+              model: "asc",
+              color: "asc"
           },
         }
     },
@@ -39,6 +46,16 @@ Vue.createApp({
             this.error = null;
             console.log("count cars : " + this.currentParkings.length);
         },
+        Login(){
+          const user = this.users.find(
+            u => u.username === this.username && u.password === this.password
+          );
+          if (user) {
+            this.logout = false; 
+          } else {
+            this.error = "Forkert brugernavn eller adgangskode.";
+          }
+        },
         toggleView(){
           this.isCurrentView = !this.isCurrentView;
           this.isCurrentView ? this.getAllCurrentParkings() : this.getAllEndedParkings()
@@ -49,12 +66,11 @@ Vue.createApp({
           const elapsedMs = now - start; // Forskellen i millisekunder
           
           // Beregn timer, minutter og sekunder
-          const seconds = Math.floor((elapsedMs / 1000) % 60);
           const minutes = Math.floor((elapsedMs / 1000 / 60) % 60);
           const hours = Math.floor(elapsedMs / 1000 / 60 / 60);
     
           // Returner resultatet som en string
-          return `${hours}h ${minutes}m ${seconds}s`;
+          return `${hours}h ${minutes}m`;
         },
         calculateTotalTime(startTime, endTime){
           const start = new Date(startTime) // Starttidspunkt
@@ -62,11 +78,10 @@ Vue.createApp({
           const totalTime = end-start // Forskellen i millisekunder
 
           // Beregn timer, minutter og sekunder
-          const seconds = Math.floor((totalTime / 1000) % 60);
           const minutes = Math.floor((totalTime / 1000 / 60) % 60);
           const hours = Math.floor(totalTime / 1000 / 60 / 60);
 
-          return `${hours}h ${minutes}m ${seconds}s`;
+          return `${hours}h ${minutes}m`;
         },
         formatDateTime(datetime){
           const date = new Date(datetime)
@@ -114,7 +129,7 @@ Vue.createApp({
            console.log("status code: "+ response.status );
            console.log("items ", response.data)
            //add the returning data from the webservice to the variable carlists
-          this.previousParkings = response.data;
+          this.endedParkings = response.data;
           this.showParkings = response.data;
           this.status = response.status;
             
@@ -275,8 +290,8 @@ Vue.createApp({
       this.sortDirections.color = direction === "asc" ? "desc" : "asc";
     },
     resetSearch() {
-      this.LicensePlate = ''; 
-      this.showParkings = this.currentParkings
+      this.licensePlate = ''; 
+      this.showParkings = this.isCurrentView ? this.currentParkings : this.endedParkings
   },
   },
   

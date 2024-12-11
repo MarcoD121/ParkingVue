@@ -16,6 +16,24 @@
 
 <body>
     <div id="app" class="container my-4">
+        <div v-if="logout">
+            <div class="card-body">
+                <h3 class="text-center">Login</h3>
+                <form @submit.prevent="Login">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Brugernavn</label>
+                            <input type="text" class="form-control" v-model="username" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Adgangskode</label>
+                            <input type="password" class="form-control" v-model="password" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <span class="text-danger" v-if="error">{{error}}</span>
+                </div>
+        </div>
+        <div v-else>
         <div class="d-flex justify-content-end">
             <button class="login-logout-button btn btn-outline-primary">Log ud</button>
         </div>
@@ -32,8 +50,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 style="text-decoration: underline;">Nuværende parkeret biler</h2>
                     <div class="d-flex col-3">
-                            <input class="form-control me-2" v-model="LicensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCarByLicensePlate(LicensePlate)">
-                            <button v-if="LicensePlate" class="btn btn-secondary ms-2" @click="resetSearch">Nulstil</button>
+                            <input class="form-control me-2" v-model="licensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCurrentCarByLicensePlate(licensePlate)">
+                            <button v-if="licensePlate" class="btn btn-secondary ms-2" @click="resetSearch">Nulstil</button>
                     </div>
                 </div>
             <table class="table table-bordered table-striped">
@@ -116,7 +134,7 @@
             </table>
         </div> 
     </div>
-
+</div>
     <script src="main.js"></script>
 </body>
 </html>
