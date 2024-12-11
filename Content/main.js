@@ -27,7 +27,9 @@ Vue.createApp({
               model: "asc",
               color: "asc",
               time: "asc",
-              totalTime: "asc"
+              totalTime: "asc",
+              timeStart: "asc",
+              timeEnded: "asc",
 
           },
         }
@@ -55,6 +57,7 @@ Vue.createApp({
           );
           if (user) {
             this.logout = false; 
+            this.error = null;
           } else {
             this.error = "Forkert brugernavn eller adgangskode.";
           }
@@ -172,7 +175,15 @@ Vue.createApp({
         }
         else {
           this.error = null;
-          this.showParkings = this.endedParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+          // this.showParkings = this.endedParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+          const filteredParkings = this.endedParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+          if(filteredParkings.length > 0){
+            this.showParkings = filteredParkings;
+          }
+          else{
+            this.error = `Nummerpladen ${licensePlate} findes ikke i listen`;
+            this.showParkings = this.endedParkings;
+          }
         }
       },
         getCarByLicensePlate(licensePlate){
@@ -323,11 +334,40 @@ Vue.createApp({
     resetSearch() {
       this.licensePlate = ''; 
       this.showParkings = this.isCurrentView ? this.currentParkings : this.endedParkings
+      this.error = null
   },
   resetSearchEnded(){
     this.licensePlate = ''
     this.showParkings = this.endedParkings
-  }
+    this.error = null
   },
+  sortByTimeStart() {
+    const direction = this.sortDirections.timeStart;
+    this.showParkings.sort((a, b) => {
+        const timeA = new Date(a.endedParked.timeStarted).getTime();
+        const timeB = new Date(b.endedParked.timeStarted).getTime();
+        return direction === "asc" ? timeA - timeB : timeB - timeA;
+    });
+    this.sortDirections.timeStart = direction === "asc" ? "desc" : "asc";
+},
+sortByTimeEnded() {
+  const direction = this.sortDirections.timeEnded;
+  this.showParkings.sort((a, b) => {
+      const timeA = new Date(a.endedParked.timeEnded).getTime(); 
+      const timeB = new Date(b.endedParked.timeEnded).getTime(); 
+      return direction === "asc" ? timeA - timeB : timeB - timeA; 
+  });
+  this.sortDirections.timeEnded = direction === "asc" ? "desc" : "asc"; 
+},
+sortByTotalTimeEnded() {
+  const direction = this.sortDirections.totalTime;
+  this.showParkings.sort((a, b) => {
+    const totalTimeA = a.endedParked ? new Date().getTime() - new Date(a.endedParked.timeEnded).getTime() : 0;
+    const totalTimeB = b.endedParked ? new Date().getTime() - new Date(b.endedParked.timeEnded).getTime(): 0; 
+    return direction === "asc" ? totalTimeA - totalTimeB : totalTimeB - totalTimeA;
+  });
+  this.sortDirections.totalTime = direction === "asc" ? "desc" : "asc";
+}
+},
   
 }).mount("#app");
