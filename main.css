@@ -56,8 +56,13 @@ h2 {
   color: #333;
 }
 
-table th, .table td {
-  width: 16.66%;
+.table td {
+  width: 5%;
+  vertical-align: middle;
+}
+
+table th{
+  width: 5%;
   vertical-align: middle;
   cursor: pointer;
 }

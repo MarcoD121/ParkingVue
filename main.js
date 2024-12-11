@@ -22,11 +22,16 @@ Vue.createApp({
           },
         }
     },
-     created() {
+    created() {
         // created() is a life cycle method, not an ordinary method
         // created() is called automatically when the page is loaded
         console.log("created method called")
         this.getAllCurrentParkings()
+    },
+    mounted(){
+      setInterval(() => {
+        this.showParkings = [...this.showParkings]; // Tving Vue til at opdatere DOM
+      }, 1000); // Opdater hver sekund
     },
     methods: {
         cleanList() {
@@ -38,8 +43,42 @@ Vue.createApp({
           this.isCurrentView = !this.isCurrentView;
           this.isCurrentView ? this.getAllCurrentParkings() : this.getAllEndedParkings()
         },
+        calculateElapsedTime(startTime) {
+          const now = new Date(); // Nu
+          const start = new Date(startTime); // Starttidspunkt
+          const elapsedMs = now - start; // Forskellen i millisekunder
+          
+          // Beregn timer, minutter og sekunder
+          const seconds = Math.floor((elapsedMs / 1000) % 60);
+          const minutes = Math.floor((elapsedMs / 1000 / 60) % 60);
+          const hours = Math.floor(elapsedMs / 1000 / 60 / 60);
+    
+          // Returner resultatet som en string
+          return `${hours}h ${minutes}m ${seconds}s`;
+        },
+        calculateTotalTime(startTime, endTime){
+          const start = new Date(startTime) // Starttidspunkt
+          const end  = new Date(endTime) // Sluttidspunkt
+          const totalTime = end-start // Forskellen i millisekunder
+
+          // Beregn timer, minutter og sekunder
+          const seconds = Math.floor((totalTime / 1000) % 60);
+          const minutes = Math.floor((totalTime / 1000 / 60) % 60);
+          const hours = Math.floor(totalTime / 1000 / 60 / 60);
+
+          return `${hours}h ${minutes}m ${seconds}s`;
+        },
+        formatDateTime(datetime){
+          const date = new Date(datetime)
+          const hours = date.getHours()
+          const minutes = date.getMinutes()
+          const year = date.getFullYear()
+          const month = date.getMonth()+1
+          const day = date.getDate()
+          return `${day}-${month}-${year} ${hours}:${minutes} `;
+        },
         //Read this for an example: https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
-         getAllCurrentParkings() {
+        getAllCurrentParkings() {
             this.error = null;
              //axios call that returns all the elements from the webservice
             axios.get(baseUrl+"/ActiveParkings")
@@ -89,6 +128,24 @@ Vue.createApp({
             this.error = error.message
             console.log("Error:" + this.error);
           })
+      },
+      getCurrentCarByLicensePlate(licensePlate){
+        if (licensePlate == ""){
+          this.getAllCurrentParkings()
+        }
+        else {
+          this.error = null;
+          this.showParkings = this.currentParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+        }
+      },
+      getEndedCarByLicensePlate(licensePlate){
+        if (licensePlate == ""){
+          this.getAllEndedParkings()
+        }
+        else {
+          this.error = null;
+          this.showParkings = this.endedParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+        }
       },
         getCarByLicensePlate(licensePlate){
           if (licensePlate == ""){
