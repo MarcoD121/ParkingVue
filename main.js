@@ -1,105 +1,164 @@
 const baseUrl = "http://localhost:5270/api/Parkings";
 
 Vue.createApp({
-  data() {
-    return {
-      currentParkings: [],
-      previousParkings: [],
-      showParkings: [],
-      isCurrentView: true,
-      error: null,
-      statuscode: null,
-      getCarId: "",
-      carId: 8,
-      carMake: "Ford",
-      carModel: "Mustang",
-      deletecarId: 1,
-      sortDirections: {
-        licensePlate: "asc",
-        make: "asc",
-        model: "asc",
-        color:"asc"
-      },
-    };
-  },
-  created() {
-    // created() is a life cycle method, not an ordinary method
-    // created() is called automatically when the page is loaded
-    console.log("created method called");
-    this.getAllCurrentParkings();
-  },
-  methods: {
-    cleanList() {
-      this.currentParkings = [];
-      this.error = null;
-      console.log("count cars : " + this.currentParkings.length);
+    data() {
+        return {
+            currentParkings:[],
+            previousParkings: [],
+            showParkings: [],
+            isCurrentView: true,
+            error: null,
+            statuscode:null,
+            getCarId: "",
+            carId:8,
+            carMake:"Ford",
+            carModel:"Mustang",
+            deletecarId:1,
+            // sortDirection: "asc",
+            currentSortColumn: null,
+            sortDirections: {
+              licensePlate: "asc",
+              make: "asc",
+          },
+        }
     },
-    toggleView() {
-      this.isCurrentView = !this.isCurrentView;
-      this.isCurrentView ? this.getAllCurrentParkings() : this.getAllEndedParkings();
+    created() {
+        // created() is a life cycle method, not an ordinary method
+        // created() is called automatically when the page is loaded
+        console.log("created method called")
+        this.getAllCurrentParkings()
     },
-    //Read this for an example: https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
-    getAllCurrentParkings() {
-      this.error = null;
-      //axios call that returns all the elements from the webservice
-      axios
-        .get(baseUrl + "/ActiveParkings")
-        .then((response) => {
-          console.log("in function getAllParkings");
-          console.log("status code: " + response.status);
-          console.log("items ", response.data);
-          //add the returning data from the webservice to the variable carlists
-          this.currentParkings = response.data;
-          this.showParkings = response.data;
-          this.status = response.status;
+    mounted(){
+      setInterval(() => {
+        this.showParkings = [...this.showParkings]; // Tving Vue til at opdatere DOM
+      }, 1000); // Opdater hver sekund
+    },
+    methods: {
+        cleanList() {
+            this.currentParkings = [];
+            this.error = null;
+            console.log("count cars : " + this.currentParkings.length);
+        },
+        toggleView(){
+          this.isCurrentView = !this.isCurrentView;
+          this.isCurrentView ? this.getAllCurrentParkings() : this.getAllEndedParkings()
+        },
+        calculateElapsedTime(startTime) {
+          const now = new Date(); // Nu
+          const start = new Date(startTime); // Starttidspunkt
+          const elapsedMs = now - start; // Forskellen i millisekunder
+          
+          // Beregn timer, minutter og sekunder
+          const seconds = Math.floor((elapsedMs / 1000) % 60);
+          const minutes = Math.floor((elapsedMs / 1000 / 60) % 60);
+          const hours = Math.floor(elapsedMs / 1000 / 60 / 60);
+    
+          // Returner resultatet som en string
+          return `${hours}h ${minutes}m ${seconds}s`;
+        },
+        calculateTotalTime(startTime, endTime){
+          const start = new Date(startTime) // Starttidspunkt
+          const end  = new Date(endTime) // Sluttidspunkt
+          const totalTime = end-start // Forskellen i millisekunder
 
-          console.log(
-            "length of the currentParkings array " + this.currentParkings.length
-          );
-        })
-        .catch((error) => {
-          //resultElement.innerHTML = generateErrorHTMLOutput(error);
-          this.showParkings = [];
-          this.error = error.message;
-          console.log("Error:" + this.error);
-        });
-    },
-    getAllEndedParkings() {
-      this.error = null;
-      //axios call that returns all the elements from the webservice
-      axios
-        .get(baseUrl + "/EndedParkings")
-        .then((response) => {
-          console.log("in function getAllEndedParkings");
-          console.log("status code: " + response.status);
-          console.log("items ", response.data);
-          //add the returning data from the webservice to the variable carlists
+          // Beregn timer, minutter og sekunder
+          const seconds = Math.floor((totalTime / 1000) % 60);
+          const minutes = Math.floor((totalTime / 1000 / 60) % 60);
+          const hours = Math.floor(totalTime / 1000 / 60 / 60);
+
+          return `${hours}h ${minutes}m ${seconds}s`;
+        },
+        formatDateTime(datetime){
+          const date = new Date(datetime)
+          const hours = date.getHours()
+          const minutes = date.getMinutes()
+          const year = date.getFullYear()
+          const month = date.getMonth()+1
+          const day = date.getDate()
+          return `${day}-${month}-${year} ${hours}:${minutes} `;
+        },
+        //Read this for an example: https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
+        getAllCurrentParkings() {
+            this.error = null;
+             //axios call that returns all the elements from the webservice
+            axios.get(baseUrl+"/ActiveParkings")
+            .then(response => {
+
+             console.log("in function getAllParkings");
+             console.log("status code: "+ response.status );
+             console.log("items ", response.data)
+             //add the returning data from the webservice to the variable carlists
+            this.currentParkings = response.data;
+            this.showParkings = response.data
+            this.status = response.status;
+              
+            console.log("length of the currentParkings array " + this.currentParkings.length)
+
+
+            })
+            .catch(error => {
+              //resultElement.innerHTML = generateErrorHTMLOutput(error);
+              this.showParkings = []
+              this.error = error.message
+              console.log("Error:" + this.error);
+            })      
+            
+        },
+        getAllEndedParkings() {
+          this.error = null;
+           //axios call that returns all the elements from the webservice
+          axios.get(baseUrl+"/EndedParkings")
+          .then(response => {
+
+           console.log("in function getAllEndedParkings");
+           console.log("status code: "+ response.status );
+           console.log("items ", response.data)
+           //add the returning data from the webservice to the variable carlists
           this.previousParkings = response.data;
           this.showParkings = response.data;
           this.status = response.status;
+            
+          console.log("length of the currentParkings array " + this.currentParkings.length)
 
-          console.log(
-            "length of the currentParkings array " + this.currentParkings.length
-          );
-        })
-        .catch((error) => {
-          //resultElement.innerHTML = generateErrorHTMLOutput(error);
-          this.showParkings = [];
-          this.error = error.message;
-          console.log("Error:" + this.error);
-        });
-    },
-    getCarByLicensePlate(licensePlate) {
-      if (licensePlate == "") {
-        this.getAllCurrentParkings();
-      } else {
-        this.error = null;
-        //axios call that returns the items from a specified user
-        url = baseUrl + "/" + licensePlate;
-        axios
-          .get(url)
-          .then((response) => {
-            console.log("Url: " + url);
+
+          })
+          .catch(error => {
+            //resultElement.innerHTML = generateErrorHTMLOutput(error);
+            this.showParkings = []
+            this.error = error.message
+            console.log("Error:" + this.error);
+          })
+      },
+      getCurrentCarByLicensePlate(licensePlate){
+        if (licensePlate == ""){
+          this.getAllCurrentParkings()
+        }
+        else {
+          this.error = null;
+          this.showParkings = this.currentParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+        }
+      },
+      getEndedCarByLicensePlate(licensePlate){
+        if (licensePlate == ""){
+          this.getAllEndedParkings()
+        }
+        else {
+          this.error = null;
+          this.showParkings = this.endedParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+        }
+      },
+        getCarByLicensePlate(licensePlate){
+          if (licensePlate == ""){
+            this.getAllCurrentParkings()
+          }
+          else {
+            this.error = null;
+            //axios call that returns the items from a specified user 
+            url = baseUrl +"/"+licensePlate
+            axios.get(url)
+            .then(response => {
+            
+            console.log("Url: " + url)
 
             console.log("in function getCarByLicensePlate");
             console.log("status code: " + response.status);
