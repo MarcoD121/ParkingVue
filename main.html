@@ -19,7 +19,6 @@
         <div class="d-flex justify-content-end">
             <button class="login-logout-button btn btn-outline-primary">Log ud</button>
         </div>
-
         <div>
             <button class="view-parking-button btn btn-primary" @click="toggleView">
                 {{ isCurrentView ? "Se tidligere parkeringer" : "Se aktuelle parkeringer" }}
@@ -31,13 +30,14 @@
             <h1 class="text-center">Ledige P-plader</h1>
             <h1 class="text-center" style="margin-bottom: 75px;">{{20-currentParkings.length}}/20 </H1>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="border-bottom">Nuværende parkeret biler</h2>
-                        <div class="d-flex col-3">
-                            <input class="form-control me-2" v-model="LicensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCarByLicensePlate(LicensePlate)" >
+                    <h2 style="text-decoration: underline;">Nuværende parkeret biler</h2>
+                    <div class="d-flex col-3">
+                            <input class="form-control me-2" v-model="LicensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCarByLicensePlate(LicensePlate)">
+                            <button v-if="LicensePlate" class="btn btn-secondary ms-2" @click="resetSearch">Nulstil</button>
                     </div>
                 </div>
             <table class="table table-bordered table-striped">
-                <thead>
+                <thead style="text-align: center;">
                     <tr>
                         <th @click="sortByLicensePlate">
                             Nummerplade
@@ -49,8 +49,14 @@
                             <span v-if="sortDirections.make === 'asc'">⇑</span>
                             <span v-if="sortDirections.make === 'desc'">⇓</span>
                         </th>
-                        <th>Model</th>
-                        <th>Farve</th>
+                        <th @click="sortByModel">Model
+                            <span v-if="sortDirections.model === 'asc'">⇑</span>
+                            <span v-if="sortDirections.model === 'desc'">⇓</span>
+                        </th>
+                        <th @click="sortByColor">Farve
+                            <span v-if="sortDirections.color === 'asc'">⇑</span>
+                            <span v-if="sortDirections.color === 'desc'">⇓</span>
+                        </th>
                         <th>Tid</th>
                         <th>Totaltid</th>
                     </tr>
