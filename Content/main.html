@@ -35,7 +35,7 @@
         </div>
         <div v-else>
         <div class="d-flex justify-content-end">
-            <button class="login-logout-button btn btn-outline-primary">Log ud</button>
+            <button @click="Logout" class="login-logout-button btn btn-danger">Log ud</button>
         </div>
         <div>
             <button class="view-parking-button btn btn-primary" @click="toggleView">
@@ -49,9 +49,10 @@
             <h1 class="text-center" style="margin-bottom: 75px;">{{20-currentParkings.length}}/20 </H1>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 style="text-decoration: underline;">Nuværende parkeret biler</h2>
+                    <span class="text-danger text-center">{{error}}</span>
                     <div class="d-flex col-3">
                             <input class="form-control me-2" v-model="licensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCurrentCarByLicensePlate(licensePlate)">
-                            <button v-if="licensePlate" class="btn btn-secondary ms-2" @click="resetSearch">Nulstil</button>
+                            <button v-if="licensePlate" class="btn btn-warning ms-2" @click="resetSearch">Nulstil</button>
                     </div>
                 </div>
             <table class="table table-bordered table-striped">
@@ -75,8 +76,16 @@
                             <span v-if="sortDirections.color === 'asc'">⇑</span>
                             <span v-if="sortDirections.color === 'desc'">⇓</span>
                         </th>
-                        <th>Tid</th>
-                        <th>Totaltid</th>
+                        <th @click="sortByTime">
+                            Tid
+                            <span v-if="sortDirections.time === 'asc'">⇑</span>
+                            <span v-if="sortDirections.time === 'desc'">⇓</span>
+                          </th>
+                          <th @click="sortByTotalTime">
+                            Totaltid
+                            <span v-if="sortDirections.totalTime === 'asc'">⇑</span>
+                            <span v-if="sortDirections.totalTime === 'desc'">⇓</span>
+                          </th>                          
                     </tr>
                 </thead>
                 <tbody v-for="parking in showParkings" :key="parking.id" class="parkings-row">
@@ -97,7 +106,8 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="border-bottom">Afsluttede parkeringer</h2>
                     <div class="d-flex col-3">
-                        <input class="form-control me-2" v-model="LicensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getEndedCarByLicensePlate(LicensePlate)" >
+                        <input class="form-control me-2" v-model="licensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getEndedCarByLicensePlate(licensePlate)" >
+                        <button v-if="licensePlate" class="btn btn-warning ms-2" @click="resetSearchEnded">Nulstil</button>
                     </div>
             </div>
             <table class="table table-bordered table-striped">
