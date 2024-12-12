@@ -16,49 +16,51 @@
 
 <body>
     <div id="app" class="container my-4">
-        <div v-if="logout">
-            <div class="card-body" style="margin:250px;">
-                <h3 class="text-center">Login</h3>
+        <div v-if="logout" class="d-flex justify-content-center align-items-center vh-100">
+            <div class="card p-4 shadow" style="max-width: 400px; width: 100%; border-radius:25px;">
+                <h3 class="text-center mb-4">Login</h3>
                 <form @submit.prevent="Login">
-                    <div class="form-floating mb-3 mt-3">
-                        <input type="text"class="form-control"id="username"placeholder="Indtast brugernavn.."v-model="username" required/>
+                    <div class="form-floating mb-3">
+                        <input id="brugernavnTest" type="text"class="form-control"id="username"placeholder="Indtast brugernavn.."v-model="username"required/>
                         <label for="username">Brugernavn:</label>
-                      </div>
-                      <div class="form-floating mb-3 mt-3">
-                        <input type="password" class="form-control"id="password"placeholder="Indtast adgangskode.."v-model="password"required/>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input id="passwordTest" type="password"class="form-control"id="password"placeholder="Indtast adgangskode.."v-model="password"required/>
                         <label for="password">Adgangskode:</label>
-                      </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
-                    <span class="text-danger" v-if="error">{{error}}</span>
-                </div>
+                    </div>
+                    <button id="loginTest" type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <span class="text-danger mt-3 d-block text-center" v-if="error">{{error}}</span>
+            </div>
         </div>
         <div v-else>
         <div class="d-flex justify-content-end">
-            <button @click="Logout" class="login-logout-button btn btn-danger">Log ud</button>
+            <div class="position-fixed">
+                <button id="logudTest" @click="Logout" class="btn btn-danger">Log ud</button>
+            </div>
         </div>
-        <div>
-            <button class="view-parking-button btn btn-primary" @click="toggleView">
+        <div class="d-flex justify-content-end mt-3">
+            <button id="seTidligereParkeringerTest" class="btn btn-primary position-fixed bottom-0 end-0 mb-3" @click="toggleView">
                 {{ isCurrentView ? "Se tidligere parkeringer" : "Se aktuelle parkeringer" }}
             </button>
         </div>
-
+        
         <!-- Kode til aktuelle parkinger -->  
         <div v-if="isCurrentView">
             <h1 class="text-center">Ledige P-plader</h1>
-            <h1 class="text-center" style="margin-bottom: 75px;">{{20-currentParkings.length}}/20 </H1>
+            <h1 class="text-center" style="margin-bottom: 60px;">{{20-currentParkings.length}}/20 </H1>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 style="text-decoration: underline;">Nuværende parkeret biler</h2>
                     <span class="text-danger text-center">{{error}}</span>
                     <div class="d-flex col-3">
-                            <input class="form-control me-2" v-model="licensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCurrentCarByLicensePlate(licensePlate)">
+                            <input id="søgAktuelleNummerplade" class="form-control me-2" v-model="licensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getCurrentCarByLicensePlate(licensePlate)">
                             <button v-if="licensePlate" class="btn btn-warning ms-2" @click="resetSearch">Nulstil</button>
                     </div>
                 </div>
             <table class="table table-bordered table-striped">
                 <thead style="text-align: center;">
                     <tr>
-                        <th @click="sortByLicensePlate">
+                        <th id="aktuelleNummerpladeTest" @click="sortByLicensePlate">
                             Nummerplade
                             <span v-if="sortDirections.licensePlate === 'asc'">⇑</span>
                             <span v-if="sortDirections.licensePlate === 'desc'">⇓</span>
@@ -103,18 +105,20 @@
         
         <!-- Kode til tidligere parkinger -->
         <div v-else>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 style="text-decoration: underline;">Afsluttede parkeringer</h2>
-                <span class="text-danger text-center">{{error}}</span>
+            <div style="margin-top: 50px;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 style="text-decoration: underline;">Afsluttede parkeringer</h2>
+                    <span class="text-danger text-center">{{error}}</span>
                     <div class="d-flex col-3">
-                        <input class="form-control me-2" v-model="licensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getEndedCarByLicensePlate(licensePlate)" >
+                        <input id="søgAfsluttedeNummerplade" class="form-control me-2" v-model="licensePlate" placeholder="Søg efter nummerplade .." type="text" v-on:keyup.enter="getEndedCarByLicensePlate(licensePlate)" >
                         <button v-if="licensePlate" class="btn btn-warning ms-2" @click="resetSearchEnded">Nulstil</button>
                     </div>
+                </div>
             </div>
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th @click="sortByLicensePlate">
+                        <th id="tidligereNummerpladeTest" @click="sortByLicensePlate">
                             Nummerplade
                             <span v-if="sortDirections.licensePlate === 'asc'">⇑</span>
                             <span v-if="sortDirections.licensePlate === 'desc'">⇓</span>
