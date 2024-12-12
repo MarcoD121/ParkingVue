@@ -160,7 +160,7 @@ Vue.createApp({
             this.getAllCurrentParkings();
         } else {
             this.error = null; 
-            const filteredParkings = this.currentParkings.filter(p => p.licensePlate === licensePlate.toUpperCase());
+            const filteredParkings = this.currentParkings.filter(p => p.licensePlate.toUpperCase() === licensePlate.toUpperCase());
             if (filteredParkings.length > 0) {
                 this.showParkings = filteredParkings;
             } else {
@@ -176,7 +176,7 @@ Vue.createApp({
         else {
           this.error = null;
           // this.showParkings = this.endedParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
-          const filteredParkings = this.endedParkings.filter(p => p.licensePlate === licensePlate.toUpperCase())
+          const filteredParkings = this.endedParkings.filter(p => p.licensePlate.toUpperCase() === licensePlate.toUpperCase())
           if(filteredParkings.length > 0){
             this.showParkings = filteredParkings;
           }
