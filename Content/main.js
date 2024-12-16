@@ -1,4 +1,4 @@
-const baseUrl = "https://testing-rest-fba3ftdtdwcqd0h5.northeurope-01.azurewebsites.net/api/Parkings";
+const baseUrl = "https://testazureconnection.azurewebsites.net/api/Parkings/";
 
 Vue.createApp({
     data() {
